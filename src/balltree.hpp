@@ -2,9 +2,10 @@
 #define BALLTREE_HPP
 
 #include <iostream>
-#include <stdio.h>      /* NULL */
-#include <stdlib.h>     /* rand */
-#include <time.h>       /* time */
+#include <assert.h>
+#include <stdio.h>  /* NULL */
+#include <stdlib.h>  /* rand */
+#include <time.h>  /* time */
 #include <cstddef>
 #include <math.h>
 #include <vector>
@@ -12,12 +13,21 @@
 
 using std::vector;
 
+#include "roraima_types.hpp"
+#include "utils.hpp"
+
 namespace roraima {
 
 struct balltree_node {
   
   balltree_node(vector<std::size_t> input_indices) : radius(0.), left(0), right(0) { 
     indices = input_indices; 
+  }
+  
+  ~balltree_node() {
+    delete left;
+    delete right;
+    indices.resize(0);
   }
 
   double radius;
@@ -38,12 +48,37 @@ public:
     this->items = items;   
   }
   
+  ~balltree() {
+    delete root;
+    items.resize(0);
+  }
+
   void build() {
     vector<std::size_t> indices(items.size());
     for(std::size_t i = 0; i < items.size(); ++i) { indices[i] = i; }
     root = build_recsive(indices);
   }
   
+  void insert(const vector<double> & item) {}
+  
+  void insert(const balltree_node  & node) {}
+
+  void insert(const vector<vector<double> > & items) {
+    for(auto & item : items) {
+      insert(item);
+    }
+  }
+  
+  void remove(const vector<double> & item) {}
+
+  void remove(const balltree_node & node) {}
+
+  void remove(const vector<vector<double> > & items) {
+    for(auto & item : items) {
+      remove(item);
+    }
+  }
+
 private:
   
   double eculid_dist(const vector<double> & a, const vector<double> & b) {
@@ -135,6 +170,7 @@ private:
     } else {
       vector<std::size_t> lc_indices, rc_indices;
       split_indices(node->indices, lc_indices, rc_indices);
+      /*
       std::cout << "srt" << std::endl;
       for(auto & i : lc_indices)
         std::cout << i << std::endl;
@@ -142,22 +178,73 @@ private:
       for(auto & i : rc_indices)
         std::cout << i << std::endl;
       std::cout << "end" << std::endl;
+      */
       node->left = build_recsive(lc_indices);
       node->right = build_recsive(rc_indices);
       return node;
     } 
   }
 
-private:
+public:
   int limit;
   balltree_node *root;
   vector<vector<double> > items;
 };
 
-void search(const balltree & stree, 
-	const vector<double> & query_item, 
-	std::size_t k,
-	vector<std::size_t> *result) {}
+double max_inner_product(const roraima::query & q,
+			const vector<double> & miu,
+			double radius) {
+  return roraima::dot_product(q.item, miu) + q.norm * radius;
+}
+
+std::size_t linear_search(const vector<std::size_t> & ids,
+		const balltree & stree,
+		roraima::query & q) {
+  std::size_t res_id = 0;
+  for(auto & id : ids) {
+    auto pdt = roraima::dot_product(stree.items[id], q.item);
+    if(pdt > q.lambda) {
+      q.lambda = pdt;
+      res_id = id;
+    }
+  }
+  return res_id;
+}
+
+void balltree_search(const balltree & stree,
+		balltree_node *node,
+		const roraima::query & q,
+		vector<std::size_t> & result) {
+		/*
+    if(q.lambda < roraima::max_inner_product(q.item, node.miu, node.radius)) {
+      // this node has potential
+      if() {
+      
+      } else {
+        // best depth first traversal
+	auto v_left = roraima::max_inner_product(q->item, node->left->miu, node->left->radius);
+	auto v_right = roraima::max_inner_product(q->item, node->right->miu, node->right->radius);
+	if(v_left <= v_right) {
+	  balltree_search(stree, );
+	  balltree_search();
+	} else {
+	  balltree_search();
+	  balltree_search();
+	}
+      }
+    } else { 
+      // Else the node is pruned from computation
+    }
+    */
+}
+
+// search api
+void search(const roraima::query & q, std::size_t k,
+	const balltree & stree,
+	vector<std::size_t> & result) {
+  result.resize(0);
+  balltree_search(stree, stree.root, q, result);
+}
 
 } // namespace roraima
 

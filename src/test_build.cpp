@@ -1,6 +1,6 @@
 #include <vector>
 #include <iostream>
-#include "ball_tree.hpp"
+#include "balltree.hpp"
 
 int main(int argc, char *argv[]) {
   std::vector<std::vector<double> > items = {{2, 3}, {2, 2},
