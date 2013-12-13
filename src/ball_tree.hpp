@@ -1,6 +1,7 @@
 #ifndef BALLTREE_HPP
 #define BALLTREE_HPP
 
+#include <iostream>
 #include <stdio.h>      /* NULL */
 #include <stdlib.h>     /* rand */
 #include <time.h>       /* time */
@@ -26,11 +27,11 @@ struct balltree_node {
   vector<std::size_t> indices;
 };
 
-
 struct balltree {
+
 public:
 
-  balltree(std::vector<std::vector<double> > items) : root(0), limit(30) { this->items = items; }
+  balltree(std::vector<std::vector<double> > items) : root(0), limit(4) { this->items = items; }
 
   balltree(int limit, std::vector<std::vector<double> > items) : root(0) { 
     this->limit = limit;
@@ -134,6 +135,13 @@ private:
     } else {
       vector<std::size_t> lc_indices, rc_indices;
       split_indices(node->indices, lc_indices, rc_indices);
+      std::cout << "srt" << std::endl;
+      for(auto & i : lc_indices)
+        std::cout << i << std::endl;
+      std::cout << "mid" << std::endl;
+      for(auto & i : rc_indices)
+        std::cout << i << std::endl;
+      std::cout << "end" << std::endl;
       node->left = build_recsive(lc_indices);
       node->right = build_recsive(rc_indices);
       return node;
