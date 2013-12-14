@@ -6,15 +6,9 @@
 #include <stdio.h>  /* NULL */
 #include <stdlib.h>  /* rand */
 #include <time.h>  /* time */
-#include <cstddef>
-#include <math.h>
 #include <vector>
 #include <algorithm>
-
 using std::vector;
-
-#include "roraima_types.hpp"
-#include "utils.hpp"
 
 namespace roraima {
 
@@ -92,7 +86,7 @@ private:
 
   /* calculate center of gravity */
   std::vector<double> cal_mean(const vector<std::size_t> & ids) {
-    std::vector<double> center(ids.size());
+    std::vector<double> center(items[0].size());
     for(auto & id : ids) {
       int i = 0;
       for(auto & dim : items[id]) {
@@ -165,7 +159,7 @@ private:
     node->miu = cal_mean(indices);
     node->radius = cal_maxr(indices, node->miu);
 
-    if(indices.size() < limit) {
+    if(indices.size() <= limit) {
       return node;
     } else {
       vector<std::size_t> lc_indices, rc_indices;
@@ -190,61 +184,6 @@ public:
   balltree_node *root;
   vector<vector<double> > items;
 };
-
-double max_inner_product(const roraima::query & q,
-			const vector<double> & miu,
-			double radius) {
-  return roraima::dot_product(q.item, miu) + q.norm * radius;
-}
-
-std::size_t linear_search(const vector<std::size_t> & ids,
-		const balltree & stree,
-		roraima::query & q) {
-  std::size_t res_id = 0;
-  for(auto & id : ids) {
-    auto pdt = roraima::dot_product(stree.items[id], q.item);
-    if(pdt > q.lambda) {
-      q.lambda = pdt;
-      res_id = id;
-    }
-  }
-  return res_id;
-}
-
-void balltree_search(const balltree & stree,
-		balltree_node *node,
-		const roraima::query & q,
-		vector<std::size_t> & result) {
-		/*
-    if(q.lambda < roraima::max_inner_product(q.item, node.miu, node.radius)) {
-      // this node has potential
-      if() {
-      
-      } else {
-        // best depth first traversal
-	auto v_left = roraima::max_inner_product(q->item, node->left->miu, node->left->radius);
-	auto v_right = roraima::max_inner_product(q->item, node->right->miu, node->right->radius);
-	if(v_left <= v_right) {
-	  balltree_search(stree, );
-	  balltree_search();
-	} else {
-	  balltree_search();
-	  balltree_search();
-	}
-      }
-    } else { 
-      // Else the node is pruned from computation
-    }
-    */
-}
-
-// search api
-void search(const roraima::query & q, std::size_t k,
-	const balltree & stree,
-	vector<std::size_t> & result) {
-  result.resize(0);
-  balltree_search(stree, stree.root, q, result);
-}
 
 } // namespace roraima
 
