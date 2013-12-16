@@ -20,6 +20,15 @@ double norm(const vector<double> & a) {
   return sqrt(norm);
 }
 
+double eculid_dist(const vector<double> & a, const vector<double> & b) {
+  double sum = 0.; 
+  for(int i = 0; i < a.size(); ++i) {
+    double s = b[i] - a[i];
+    sum += s * s;
+  }
+  return sqrt(sum);
+}		
+
 }  // namespace roraima
 
 #endif

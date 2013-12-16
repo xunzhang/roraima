@@ -8,6 +8,8 @@
 #include "roraima_types.hpp"
 #include "utils.hpp"
 
+#define DIST roraima::eculid_dist
+
 namespace roraima {
 
 double max_inner_product(const roraima::query & q,
@@ -17,7 +19,7 @@ double max_inner_product(const roraima::query & q,
 }
 
 void linear_search_array(const vector<std::size_t> & ids,
-		const balltree & stree,
+		const roraima::balltree<double, DIST> & stree,
 		roraima::query & q,
 		vector<std::pair<std::size_t, double> > & tmplst) {
   for(auto & id : ids) {
@@ -35,7 +37,7 @@ void linear_search_array(const vector<std::size_t> & ids,
 }
 
 void linear_search_heap(const vector<std::size_t> & ids,
-		const balltree & stree,
+		const roraima::balltree<double, DIST> & stree,
 		roraima::query & q,
 		roraima::min_heap & tmplst) {
   for(auto & id : ids) {
@@ -51,7 +53,7 @@ void linear_search_heap(const vector<std::size_t> & ids,
 }
 
 /* array impl */
-void balltree_search(const balltree & stree,
+void balltree_search(const roraima::balltree<double, DIST> & stree,
 		balltree_node *node,
 		roraima::query & q,
 		vector<std::pair<std::size_t, double> > & tmplst) {
@@ -82,7 +84,7 @@ void balltree_search(const balltree & stree,
 }
 
 /* heap impl */
-void balltree_search(const balltree & stree,
+void balltree_search(const roraima::balltree<double, DIST> & stree,
 		balltree_node *node,
 		roraima::query & q,
 		roraima::min_heap & tmplst) {
@@ -114,7 +116,7 @@ void balltree_search(const balltree & stree,
 
 // search api
 void search(roraima::query & q,
-	const balltree & stree,
+	const roraima::balltree<double, DIST> & stree,
 	vector<std::size_t> & result) {
   result.resize(0);
   //vector<std::pair<std::size_t, double> > tmplst;

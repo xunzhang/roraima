@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 					{9.4, 6.8}, {9.2, 6.6}, {9.1, 6.1}, {7.9, 3.7},
 					{8.8, 3.2}, {9.1, 2.7}, {8.7, 1.8}, {8.9, 1.5}};
   std::vector<std::size_t> r;
-  roraima::balltree stree(items);
+  roraima::balltree<double, roraima::eculid_dist> stree(items);
   stree.build();
   std::cout << "built" << std::endl;
   std::vector<double> tmp = {1., 2.};

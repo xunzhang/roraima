@@ -17,8 +17,7 @@ struct balltree_node {
   balltree_node(vector<std::size_t> input_indices) : radius(0.), left(0), right(0) { 
     indices = input_indices; 
   }
-  
-  ~balltree_node() {
+   ~balltree_node() {
     delete left;
     delete right;
     indices.resize(0);
@@ -31,15 +30,18 @@ struct balltree_node {
   vector<std::size_t> indices;
 };
 
+template <class T,
+	double (*dist)(const vector<T> & , 
+		const vector<T> &)>
 struct balltree {
 
 public:
 
-  balltree(std::vector<std::vector<double> > items) : root(0), limit(4) { this->items = items; }
+  balltree(vector<vector<T> > items) : root(0), limit(4) { this->items = items; }
 
-  balltree(int limit, std::vector<std::vector<double> > items) : root(0) { 
+  balltree(int limit, vector<vector<T> > items) : root(0) { 
     this->limit = limit;
-    this->items = items;   
+    this->items = items; 
   }
   
   ~balltree() {
@@ -53,40 +55,35 @@ public:
     root = build_recsive(indices);
   }
   
-  void insert(const vector<double> & item) {}
+  // TODO
+  void insert(const vector<T> & item) {}
   
+  // TODO
   void insert(const balltree_node  & node) {}
 
-  void insert(const vector<vector<double> > & items) {
+  void insert(const vector<vector<T> > & items) {
     for(auto & item : items) {
       insert(item);
     }
   }
   
-  void remove(const vector<double> & item) {}
+  // TODO
+  void remove(const vector<T> & item) {}
 
+  // TODO
   void remove(const balltree_node & node) {}
 
-  void remove(const vector<vector<double> > & items) {
+  void remove(const vector<vector<T> > & items) {
     for(auto & item : items) {
       remove(item);
     }
   }
 
 private:
-  
-  double eculid_dist(const vector<double> & a, const vector<double> & b) {
-    double sum = 0.;
-    for(int i = 0; i < a.size(); ++i) {
-      double s = b[i] - a[i];
-      sum += s * s;
-    }
-    return sqrt(sum);
-  }
 
   /* calculate center of gravity */
-  std::vector<double> cal_mean(const vector<std::size_t> & ids) {
-    std::vector<double> center(items[0].size());
+  vector<T> cal_mean(const vector<std::size_t> & ids) {
+    vector<T> center(items[0].size());
     for(auto & id : ids) {
       int i = 0;
       for(auto & dim : items[id]) {
@@ -94,7 +91,7 @@ private:
 	i += 1;
       }
     }
-    double tmp = 1. / ids.size();
+    T tmp = 1. / ids.size();
     for(int i = 0; i < center.size(); ++i) {
       center[i] *= tmp;
     }
@@ -106,17 +103,17 @@ private:
   		const vector<double> & miu) {
     vector<double> dist_lst;
     for(auto & id : ids) {
-      dist_lst.emplace_back(eculid_dist(items[id], miu));
+      dist_lst.emplace_back(dist(items[id], miu));
     }
     return *std::max_element(dist_lst.begin(), dist_lst.end());
   }
   
-  vector<double> arg_max(const vector<double> & basis,
+  vector<T> arg_max(const vector<T> & basis,
   			const vector<std::size_t> & cmp_ids) {
     std::size_t maxid;
     double t = 0.;
     for(auto & id : cmp_ids) {
-      double d = eculid_dist(basis, items[id]);
+      double d = dist(basis, items[id]);
       auto tmp = d * d;
       if(tmp > t) {
         t = tmp;
@@ -127,14 +124,14 @@ private:
   }
   
   void partition(const vector<std::size_t> & ids, 
-  		const vector<double> & xa,
-		const vector<double> & xb,
+  		const vector<T> & xa,
+		const vector<T> & xb,
 		vector<std::size_t> & lc_ids,
 		vector<std::size_t> & rc_ids) {		
     lc_ids.resize(0); rc_ids.resize(0);
     for(auto & id : ids) {
-      auto d1 = eculid_dist(items[id], xa);
-      auto d2 = eculid_dist(items[id], xb);
+      auto d1 = dist(items[id], xa);
+      auto d2 = dist(items[id], xb);
       if(d1 <= d2) {
         lc_ids.push_back(id);
       } else {
@@ -182,7 +179,7 @@ private:
 public:
   int limit;
   balltree_node *root;
-  vector<vector<double> > items;
+  vector<vector<T> > items;
 };
 
 } // namespace roraima
