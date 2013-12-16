@@ -8,7 +8,8 @@
 #include "roraima_types.hpp"
 #include "utils.hpp"
 
-#define DIST roraima::eculid_dist
+//#define DIST roraima::eculid_dist
+constexpr auto DIST = roraima::eculid_dist;
 
 namespace roraima {
 
