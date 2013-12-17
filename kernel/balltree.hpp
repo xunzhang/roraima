@@ -8,6 +8,7 @@
 #include <time.h>  /* time */
 #include <vector>
 #include <algorithm>
+
 using std::vector;
 
 namespace roraima {
@@ -37,7 +38,7 @@ struct balltree {
 
 public:
 
-  balltree(vector<vector<T> > items) : root(0), limit(4) { this->items = items; }
+  balltree(vector<vector<T> > items) : limit(4), root(0) { this->items = items; }
 
   balltree(int limit, vector<vector<T> > items) : root(0) { 
     this->limit = limit;
@@ -92,7 +93,7 @@ private:
       }
     }
     T tmp = 1. / ids.size();
-    for(int i = 0; i < center.size(); ++i) {
+    for(int i = 0; i < (int)center.size(); ++i) {
       center[i] *= tmp;
     }
     return center;
@@ -156,7 +157,7 @@ private:
     node->miu = cal_mean(indices);
     node->radius = cal_maxr(indices, node->miu);
 
-    if(indices.size() <= limit) {
+    if((int)indices.size() <= limit) {
       return node;
     } else {
       vector<std::size_t> lc_indices, rc_indices;

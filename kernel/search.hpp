@@ -3,10 +3,11 @@
 
 #include <assert.h>
 #include <vector>
-
 #include "balltree.hpp"
 #include "roraima_types.hpp"
 #include "utils.hpp"
+
+using std::vector;
 
 //#define DIST roraima::eculid_dist
 constexpr auto DIST = roraima::eculid_dist;
@@ -32,7 +33,7 @@ void linear_search_array(const vector<std::size_t> & ids,
 	std::pair<std::size_t, double> b) {
   	  return a.second > b.second;
 	});
-  if(tmplst.size() >= q.k) {
+  if((int)tmplst.size() >= q.k) {
     q.lambda = tmplst[tmplst.size() - 1].second;
   }
 }
@@ -45,10 +46,10 @@ void linear_search_heap(const vector<std::size_t> & ids,
     auto pdt = roraima::dot_product(stree.items[id], q.item);
     auto node = roraima::heap_node(id, pdt);
     tmplst.push(node.val);
-    if(tmplst.size() > q.k) tmplst.pop();
+    if((int)tmplst.size() > q.k) tmplst.pop();
   }
-  assert(tmplst.size() <= q.k);
-  if(tmplst.size() == q.k) {
+  assert((int)tmplst.size() <= q.k);
+  if((int)tmplst.size() == q.k) {
     q.lambda = tmplst.top().second;
   }
 }
@@ -123,7 +124,7 @@ void search(roraima::query & q,
   //vector<std::pair<std::size_t, double> > tmplst;
   roraima::min_heap tmplst;
   balltree_search(stree, stree.root, q, tmplst);
-  assert(q.k <= tmplst.size());
+  assert(q.k <= (int)tmplst.size());
   /*
   for(int i = 0; i < q.k; ++i) {
     result.push_back(tmplst[i].first);

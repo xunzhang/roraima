@@ -4,23 +4,22 @@
 #include <limits>
 #include <vector>
 #include <queue>
-using std::vector;
 
 #include "utils.hpp"
 
 namespace roraima {
 
 struct query {
-  query(vector<double> item) : lambda(std::numeric_limits<double>::lowest()), bm_indx(0), k(0) { 
+  query(std::vector<double> item) : lambda(std::numeric_limits<double>::lowest()), bm_indx(0), k(0) { 
     this->item = item; 
     this->norm = roraima::norm(item);  
   }
-  query(vector<double> item, int k) : lambda(std::numeric_limits<double>::lowest()), bm_indx(0) { 
+  query(std::vector<double> item, int k) : lambda(std::numeric_limits<double>::lowest()), bm_indx(0) { 
     this->k = k;
     this->item = item; 
     this->norm = roraima::norm(item);  
   }
-  vector<double> item;
+  std::vector<double> item;
   double lambda;
   double bm_indx;
   double norm;
