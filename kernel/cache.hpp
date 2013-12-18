@@ -98,9 +98,18 @@ public:
   }
   
   void traverse_print() {
-    std::cout << "size is " << sz << std::endl;
-    for(auto it = head; it != tail; it = it->r) 
-      std::cout << it->val << " ";
+    std::cout << "remaining size is " << sz << std::endl;
+    std::cout << "val:" << std::endl;
+    for(auto it = head; it != tail; it = it->r) {
+      for(auto & item : it->val) {
+        std::cout << item << " ";
+      }
+    }
+    std::cout << std::endl;
+    std::cout << "key:" << std::endl;
+    for(auto it = head; it != tail; it = it->r) {
+      std::cout << it->key << " ";
+    }
     std::cout << std::endl;
   }
 

@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
   std::vector<std::string> mock_questions(100);
   mock_questions[0] = "1";
-  mock_questions[1] = "17";
+  mock_questions[1] = "7";
   mock_questions[2] = "1";
   mock_questions[3] = "3";
   mock_questions[4] = "1";
@@ -146,21 +146,22 @@ int main(int argc, char *argv[])
   roraima::balltree<double, roraima::eculid_dist> stree(item_factor_lst);
   stree.build();
   
-  for(auto & kv : local_map) {
+  for(auto & s : mock_questions) {
     int cnt = 0;
-    std::string s = kv.first;
     auto user_factor = get_usr_factor(FLAGS_usr_factor_file, s);
     roraima::query q(user_factor, FLAGS_topk);
     answer = cache.Get(s);
     if(!answer.size()) {
+      std::cout << "cache miss" << std::endl;
       cnt = roraima::search(q, stree, answer);
     } else {
       std::cout << "cache hit" << std::endl;
     }
     cache.Put(s, answer);
+    auto debug = cache.Get(s);
     std::cout << "span cnt: " << cnt << " out of " << item_factor_lst.size() << std::endl;
-    for(auto & indx : answer)
-      std::cout << indx << std::endl;
+    //for(auto & indx : answer)
+    //  std::cout << indx << std::endl;
   }
   MPI_Finalize();
   return 0;
