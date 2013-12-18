@@ -27,7 +27,7 @@ struct query {
 };
 
 struct min_heap_cmp {
-  bool operator() (const std::pair<std::size_t, double >& l,
+  inline bool operator() (const std::pair<std::size_t, double >& l,
   		const std::pair<std::size_t, double >& r) {
     return l.second > r.second;		
   }

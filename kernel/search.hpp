@@ -14,6 +14,7 @@ constexpr auto DIST = roraima::eculid_dist;
 
 namespace roraima {
 
+int span_cnt = 0;
 double max_inner_product(const roraima::query & q,
 			const vector<double> & miu,
 			double radius) {
@@ -52,6 +53,7 @@ void linear_search_heap(const vector<std::size_t> & ids,
   if((int)tmplst.size() == q.k) {
     q.lambda = tmplst.top().second;
   }
+  span_cnt += ids.size();
 }
 
 /* array impl */
@@ -116,13 +118,14 @@ void balltree_search(const roraima::balltree<double, DIST> & stree,
     }
 }
 
-// search api
-void search(roraima::query & q,
+// balltree search api
+int search(roraima::query & q,
 	const roraima::balltree<double, DIST> & stree,
 	vector<std::size_t> & result) {
   result.resize(0);
   //vector<std::pair<std::size_t, double> > tmplst;
   roraima::min_heap tmplst;
+  span_cnt = 0;
   balltree_search(stree, stree.root, q, tmplst);
   assert(q.k <= (int)tmplst.size());
   /*
@@ -135,6 +138,30 @@ void search(roraima::query & q,
     tmplst.pop();
   }
   std::reverse(result.begin(), result.end());
+  return span_cnt;
+}
+
+// brute force pair-wise search
+int search(roraima::query & q,
+	const vector<vector<double> > & buf,
+	vector<std::size_t> & result) {
+  result.resize(0);
+  vector<std::pair<std::size_t, double> > dpt;
+  int id = 0;
+  for(auto & item_factor : buf) {
+    dpt.push_back(
+    	std::pair<std::size_t, double>(id,
+		roraima::dot_product(q.item, item_factor)));
+    id += 1;
+  }
+  std::sort(dpt.begin(), dpt.end(), 
+  	[] (std::pair<std::size_t, double> a, 
+	std::pair<std::size_t, double> b) {
+  	  return a.second > b.second;
+	});
+  for(int i = 0; i < q.k; ++i) {
+    result.push_back(dpt[i].first);
+  }
 }
 
 } // namespace roraima

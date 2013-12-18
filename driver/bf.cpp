@@ -82,17 +82,14 @@ int main(int argc, char *argv[])
 
   std::vector<std::size_t> answer;
   auto item_factor_lst = get_item_factor(FLAGS_item_factor_file);
-  roraima::balltree<double, roraima::eculid_dist> stree(item_factor_lst);
-  stree.build();
   
   std::cout << "usr_id: " << std::endl;
   std::string s;
   while(std::cin >> s) { 
-    //auto user_factor = get_usr_factor("/home/xunzhang/xunzhang/Proj/parasol/tests/serial_mf/usr_factor.csv", 1);
     auto user_factor = get_usr_factor(FLAGS_usr_factor_file, s);
     roraima::query q(user_factor, FLAGS_topk);
-    int cnt = roraima::search(q, stree, answer);
-    std::cout << "span cnt: " << cnt << " out of " << item_factor_lst.size() << std::endl;
+    roraima::search(q, item_factor_lst, answer);
+    std::cout << "---" << std::endl;
     for(auto & indx : answer)
       std::cout << indx << std::endl;
     std::cout << "usr_id: " << std::endl;

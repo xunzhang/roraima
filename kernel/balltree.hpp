@@ -38,7 +38,7 @@ struct balltree {
 
 public:
 
-  balltree(vector<vector<T> > items) : limit(4), root(0) { this->items = items; }
+  balltree(vector<vector<T> > items) : limit(20), root(0) { this->items = items; }
 
   balltree(int limit, vector<vector<T> > items) : root(0) { 
     this->limit = limit;
