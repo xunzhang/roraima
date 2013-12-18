@@ -102,8 +102,8 @@ class bmf():
 
     def write_result(self):
         print self.miu
-        f1 = open('usr_factor.csv', 'w')
-	f2 = open('item_factor.csv', 'w')
+        f1 = open('usr_factor2.csv', 'w')
+	f2 = open('item_factor2.csv', 'w')
 	for indx in xrange(len(self.usr_dct)):
 	    f1.write('%s:%s' % (self.reverse_usr_dct[indx], self.usr_bias[indx]))
 	    for factor in self.p[indx]:
@@ -117,7 +117,7 @@ class bmf():
 	        
 
 if __name__ == '__main__':
-    bmf_solver = bmf(k = 10, rounds = 5, alpha = 0.005, beta = 0.02, train_fn = '/home/xunzhang/xunzhang/Data/mf/movielen1m', validate_fn = 'null', pred_fn = 'pred.csv', output = 'result.csv')
+    bmf_solver = bmf(k = 80, rounds = 5, alpha = 0.005, beta = 0.02, train_fn = '/home/xunzhang/xunzhang/Data/mf/movielen1m', validate_fn = 'null', pred_fn = 'pred.csv', output = 'result.csv')
     bmf_solver.learn()
     bmf_solver.write_result()
     bmf_solver.predict_rating()

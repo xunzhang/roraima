@@ -142,7 +142,7 @@ int search(roraima::query & q,
 }
 
 // brute force pair-wise search
-int search(roraima::query & q,
+void search(roraima::query & q,
 	const vector<vector<double> > & buf,
 	vector<std::size_t> & result) {
   result.resize(0);
