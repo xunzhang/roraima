@@ -6,7 +6,7 @@ endif
 
 BIN_DIR = $(RORAIMA_DIR)bin/
 
-CXX = g++
+CXX = g++-4.7.2
 CFLAGS = -O2 -march=native -mtune=native -funroll-loops -fPIC -Wall -std=c++11
 CPPFLAGS = -I$(RORAIMA_DIR)kernel/
 LIBS = -lgflags
