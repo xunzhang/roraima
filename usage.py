@@ -1,10 +1,10 @@
 from quora_wrapper import start_quora_online, quora_online, start_quora_brute_force, quora_brute_force
 
 def foo(uid, p):
-    print quora_online(uid, p, 10)
+    print quora_online(uid, p, 50)
 
 def foo2(uid, p):
-    print quora_brute_force(uid, p, 10)
+    print quora_brute_force(uid, p, 50)
 
 if __name__ == '__main__':
     usr_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/usr_factor.csv'

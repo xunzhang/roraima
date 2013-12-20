@@ -1,5 +1,6 @@
 from subprocess import Popen, PIPE
 
+# topk must be same as in start_ functions
 def quora_brute_force(uid, p, topk = 50):
     p.stdin.write(uid + '\n')
     item_lst = []
@@ -7,6 +8,7 @@ def quora_brute_force(uid, p, topk = 50):
         item_lst.append(p.stdout.readline().strip('\n'))
     return item_lst
 
+# topk must be same as in start_ functions
 def quora_online(uid, p, topk = 50):
     p.stdin.write(uid + '\n')
     item_lst = []
