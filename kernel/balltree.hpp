@@ -15,7 +15,7 @@ namespace roraima {
 
 struct balltree_node {
   
-  balltree_node(vector<std::size_t> input_indices) : radius(0.), left(0), right(0) { 
+  balltree_node(vector<long> input_indices) : radius(0.), left(0), right(0) { 
     indices = input_indices; 
   }
    ~balltree_node() {
@@ -28,7 +28,7 @@ struct balltree_node {
   balltree_node* left;
   balltree_node* right;
   vector<double> miu;
-  vector<std::size_t> indices;
+  vector<long> indices;
 };
 
 template <class T,
@@ -51,7 +51,7 @@ public:
   }
 
   void build() {
-    vector<std::size_t> indices(items.size());
+    vector<long> indices(items.size());
     for(std::size_t i = 0; i < items.size(); ++i) { indices[i] = i; }
     root = build_recsive(indices);
   }
@@ -83,7 +83,7 @@ public:
 private:
 
   /* calculate center of gravity */
-  vector<T> cal_mean(const vector<std::size_t> & ids) {
+  vector<T> cal_mean(const vector<long> & ids) {
     vector<T> center(items[0].size());
     for(auto & id : ids) {
       int i = 0;
@@ -100,7 +100,7 @@ private:
   }
   
   /* calculate radius: farthest from center */
-  double cal_maxr(const vector<std::size_t> & ids,
+  double cal_maxr(const vector<long> & ids,
   		const vector<double> & miu) {
     vector<double> dist_lst;
     for(auto & id : ids) {
@@ -110,8 +110,8 @@ private:
   }
   
   vector<T> arg_max(const vector<T> & basis,
-  			const vector<std::size_t> & cmp_ids) {
-    std::size_t maxid;
+  			const vector<long> & cmp_ids) {
+    long maxid = 0;
     double t = 0.;
     for(auto & id : cmp_ids) {
       double d = dist(basis, items[id]);
@@ -124,11 +124,11 @@ private:
     return items[maxid];
   }
   
-  void partition(const vector<std::size_t> & ids, 
+  void partition(const vector<long> & ids, 
   		const vector<T> & xa,
 		const vector<T> & xb,
-		vector<std::size_t> & lc_ids,
-		vector<std::size_t> & rc_ids) {		
+		vector<long> & lc_ids,
+		vector<long> & rc_ids) {		
     lc_ids.resize(0); rc_ids.resize(0);
     for(auto & id : ids) {
       auto d1 = dist(items[id], xa);
@@ -141,9 +141,9 @@ private:
     }  
   }
 
-  void split_indices(vector<std::size_t> ids, 
-  		vector<std::size_t> & lc_ids, 
-		vector<std::size_t> & rc_ids) { 
+  void split_indices(vector<long> ids, 
+  		vector<long> & lc_ids, 
+		vector<long> & rc_ids) { 
     srand(time(NULL));
     auto id = rand() % ids.size();
     auto xa = arg_max(items[id], ids);
@@ -151,7 +151,7 @@ private:
     partition(ids, xa, xb, lc_ids, rc_ids);
   }
 
-  balltree_node* build_recsive(vector<std::size_t> & indices) {
+  balltree_node* build_recsive(vector<long> & indices) {
     
     balltree_node* node = new balltree_node(indices);
     node->miu = cal_mean(indices);
@@ -160,7 +160,7 @@ private:
     if((int)indices.size() <= limit) {
       return node;
     } else {
-      vector<std::size_t> lc_indices, rc_indices;
+      vector<long> lc_indices, rc_indices;
       split_indices(node->indices, lc_indices, rc_indices);
       /*
       std::cout << "srt" << std::endl;

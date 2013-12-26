@@ -30,8 +30,8 @@ if __name__ == '__main__':
       tmp.insert(0, item[1][0])
       item_factor_dct[item[0]] = tmp
 
-  f1 = file(output_path + 'usr_factor.csv', 'w')
-  f2 = file(output_path + 'item_factor.csv', 'w')
+  f1 = file(output_path + 'new_usr_factor.csv', 'w')
+  f2 = file(output_path + 'new_item_factor.csv', 'w')
   
   for k, v in usr_factor_dct.items():
       f1.write('%s:%s' % (k, v[0]))

@@ -21,7 +21,7 @@ MKDIR = \
 	mkdir -p $(BIN_DIR)
 RM = rm -rf
 
-all: quora_online quora_brute_force
+all: quora_online 
 
 # rules
 quora_online: $(CXXSOURCE)

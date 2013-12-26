@@ -10,15 +10,16 @@ def foo2(uid, p):
 if __name__ == '__main__':
     usr_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/usr_factor.csv'
     item_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/item_factor.csv'
+    usr_heart_fn = '/mfs/user/wuhong/tmp/usr_heart_dict.csv'
     topk = 200
     cache_sz = 10000
-    p = start_quora_online(usr_factor_fn, item_factor_fn, topk, cache_sz)
-    p2 = start_quora_brute_force(usr_factor_fn, item_factor_fn, topk, cache_sz)
-    print '-----------------'
-    foo2('58106680', p2)
-    print '-----------------'
-    foo2('VwF6KBl/Ne8', p2)
-    print '-----------------'
+    p = start_quora_online(usr_factor_fn, item_factor_fn, usr_heart_fn, topk, cache_sz)
+    #p2 = start_quora_brute_force(usr_factor_fn, item_factor_fn, topk, cache_sz)
+    #print '-----------------'
+    #foo2('58106680', p2)
+    #print '-----------------'
+    #foo2('VwF6KBl/Ne8', p2)
+    #print '-----------------'
     time.sleep(10)
     s = time.time()
     foo('58106680', p)
