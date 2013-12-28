@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <unordered_map>
+#include <algorithm>
 
 #include <google/gflags.h>
 
@@ -26,7 +27,37 @@ std::vector<std::vector<double> > get_item_factor(const std::string & fname) {
     }
     factor_vec_lst.push_back(std::move(temp));
   }
+  f.close();
   return factor_vec_lst;
+}
+
+void get_item_indices_and_top_ibias_ids(const std::string & fname,
+			std::unordered_map<long, long> & indices_dct,
+			std::unordered_map<long, long> & reverse_indices_dct,
+			std::vector<long> & top_ibias_ids, int topk) {
+  std::ifstream f(fname);
+  std::string line_buf;
+  vector<std::pair<long, double> > d;
+  if(!f) { throw std::runtime_error("roraima error in get_item_indices_and_bias: loading failed,"); }
+  long cnt = 0;
+  while(std::getline(f, line_buf)) {
+    auto tmp = roraima::str_split(line_buf, ":");
+    auto tmp2 = roraima::str_split(tmp[1], "|");
+    indices_dct[cnt] = std::stol(tmp[0]);
+    reverse_indices_dct[std::stol(tmp[0])] = cnt;
+    d.push_back(std::pair<long, double>(std::stol(tmp[0]), std::stod(tmp2[0])));
+    cnt += 1;
+  }
+  std::sort(d.begin(), d.end(),
+    [] (std::pair<long, double> a,
+    std::pair<long, double> b) {
+    return a.second > b.second;
+  });
+  for(auto & kv : d) {
+    top_ibias_ids.push_back(kv.first);
+    if((int)top_ibias_ids.size() == topk) break;
+  }
+  f.close();
 }
 
 std::unordered_map<std::string, long> get_usr_meta_dct(const std::string & fname) {
@@ -44,7 +75,7 @@ std::unordered_map<std::string, long> get_usr_meta_dct(const std::string & fname
   return meta_dct;
 }
 
-std::unordered_map<long, char> get_heart_trackids(const std::string & fname, const long offset = 0, char sep1 = ':', char sep2 = '|') {
+std::unordered_map<long, char> get_heart_trackids(const std::string & fname, std::unordered_map<long, long> & d, const long offset = 0, char sep1 = ':', char sep2 = '|') {
   std::unordered_map<long, char> ids;
   std::ifstream f(fname);
   std::string line_buf;
@@ -53,7 +84,7 @@ std::unordered_map<long, char> get_heart_trackids(const std::string & fname, con
   auto tmp = roraima::str_split(line_buf, sep1);
   auto tmp2 = roraima::str_split(tmp[1], sep2);
   for(int i = 1; i < (int)tmp2.size(); ++i) {
-    ids[std::stol(tmp2[i])] = '0';
+    ids[d[std::stol(tmp2[i])]] = '0';
   }
   f.close();
   return ids;
@@ -123,6 +154,11 @@ int main(int argc, char *argv[])
   
   std::vector<long> answer;
   auto item_factor_lst = get_item_factor(FLAGS_item_factor_file);
+
+  std::unordered_map<long, long> item_indices_dct, reverse_item_indices_dct;
+  std::vector<long> top_ibias_ids; 
+  get_item_indices_and_top_ibias_ids(FLAGS_item_factor_file, item_indices_dct, reverse_item_indices_dct, top_ibias_ids, FLAGS_topk);
+
   auto usr_factor_meta_dct = get_usr_meta_dct(FLAGS_usr_factor_file);
   auto usr_heart_meta_dct = get_usr_meta_dct(FLAGS_usr_heart_file);
   roraima::balltree<double, roraima::eculid_dist> stree(item_factor_lst);
@@ -135,16 +171,18 @@ int main(int argc, char *argv[])
     if(usr_factor_meta_dct.find(s) != usr_factor_meta_dct.end()) {
       user_factor = get_usr_factor(FLAGS_usr_factor_file, usr_factor_meta_dct[s]);
     } else {
-      std::cout << "-1" << std::endl; 
+      //std::cout << "-1" << std::endl;
+      // sort by item_bias to cout topk
+      for(auto & indx : top_ibias_ids)
+        std::cout << indx << std::endl;
       continue; 
     }
     // load hearted trackid
     if(usr_heart_meta_dct.find(s) != usr_heart_meta_dct.end()) {
-      user_heart_ids = get_heart_trackids(FLAGS_usr_heart_file, usr_heart_meta_dct[s]);
+      user_heart_ids = get_heart_trackids(FLAGS_usr_heart_file, reverse_item_indices_dct, usr_heart_meta_dct[s]);
     } else {
       // user_heart_ids is empty
     }
-
     roraima::query q(user_heart_ids, user_factor, FLAGS_topk);
     answer = cache.Get(s);
     if(!answer.size()) {
@@ -152,7 +190,7 @@ int main(int argc, char *argv[])
     } else {}
     cache.Put(s, answer);
     for(auto & indx : answer)
-      std::cout << indx << std::endl;
+      std::cout << item_indices_dct[indx] << std::endl;
   }
   return 0;
 }

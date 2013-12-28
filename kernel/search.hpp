@@ -26,6 +26,9 @@ void linear_search_array(const vector<long> & ids,
 		roraima::query & q,
 		vector<std::pair<long, double> > & tmplst) {
   for(auto & id : ids) {
+    if(q.blacklst.find(id) != q.blacklst.end()) {
+      continue;
+    }
     auto pdt = roraima::dot_product(stree.items[id], q.item);
     tmplst.push_back(std::pair<long, double>(id, pdt));
   }
@@ -44,7 +47,9 @@ void linear_search_heap(const vector<long> & ids,
 		roraima::query & q,
 		roraima::min_heap & tmplst) {
   for(auto & id : ids) {
-    if(q.blacklst.find(id) != q.blacklst.end()) { continue; }
+    if(q.blacklst.find(id) != q.blacklst.end()) { 
+      continue; 
+    }
     auto pdt = roraima::dot_product(stree.items[id], q.item);
     auto node = roraima::heap_node(id, pdt);
     tmplst.push(node.val);

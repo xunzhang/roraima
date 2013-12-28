@@ -3,13 +3,17 @@
 import os
 import glob
 import time
+import socket
 import datetime
+import logging
 
 from mpi4py import MPI
 
 from DoubanAlg import gstore
 from quora_wrapper import start_quora_online, quora_online
 
+logging.basicConfig(filename='roraima_log', format = '%(asctime)s : %(levelname)s : %(message)s', level = logging.INFO)
+logger = logging.getLogger(__name__)
 
 #usr_heart_dct = {}
 log_path = '/mfs/log/access-log/current/radiostat/'
@@ -33,10 +37,10 @@ def load_uid(llst):
     ids = []
     for line in llst:
         l = line.strip('\n').split(',')
-	if l[0] == 'emtc' and \
-	    l[4] == 'dj_onlinefactor':
-	    if l[2].isdigit(): 
-	        ids.append(l[2])
+	if (l[0] == 'emtc' or l[0] == 'playlist') and \
+	    l[4].startswith('dj_onlinefactor'):
+	    if l[1].isdigit(): 
+	        ids.append(l[1])
     return ids
 
 def local_store(uid, track_lst):
@@ -45,10 +49,10 @@ def local_store(uid, track_lst):
     tmp = gstore.execute(tmp_cmd)
     if tmp:
         sql_cmd = 'update user_top_rating_track_predict set track_lst = "%s", time = "%s" where user_id = %s;' % (track_lst, timestamp, uid)
-	print sql_cmd
+	logger.info(sql_cmd)
     else:
         sql_cmd  = 'insert into user_top_rating_track_predict (user_id, track_lst) values(%s, "%s");' % (uid, track_lst)
-	print sql_cmd
+	logger.info(sql_cmd)
     gstore.execute(sql_cmd)
     gstore.commit()
 
@@ -67,14 +71,14 @@ def main(len_dct, p, topk):
 	        len_dct[server_name] = e
 		ids = load_uid(content[s : e])
 		for uid in ids:
-		    print uid
+		    logger.info('uid:%s' % uid)
 		    #if uid in usr_heart_dict: # heart > 10
 		    result = quora_online(uid, p, topk)
 		    if result != -1: 
 			local_store(uid, ','.join(result))
             f.close()
 	except:
-	    print 'waiting'
+	    logger.info('waiting')
     return len_dct
 
 if __name__ == '__main__':
@@ -86,10 +90,6 @@ if __name__ == '__main__':
     topk = 500
     cache_sz = 10
     p = start_quora_online(usr_factor_fn, item_factor_fn, usr_heart_fn, topk, cache_sz)
-    #f_heart = file(heart_path)
-    #for l in f_heart:
-    #    usr_heart_dct[l.strip('\n').split(':')[0]] = 1
-    #f_heart.close()
     if rk == 0:
         len_dct = {'dori' : 0}
     if rk == 1:
@@ -98,6 +98,7 @@ if __name__ == '__main__':
         len_dct = {'nori' : 0}
     if rk == 3:
         len_dct = {'thorin' : 0}
+    logger.info('rank %s starting at main loop @%s' % (rk, socket.gethostname()))
     # main loop
     while 1:
         len_dct = main(len_dct, p, topk)
