@@ -11,6 +11,10 @@ using std::vector;
 
 namespace roraima {
 
+bool startswith(const std::string & str, const std::string & key) {
+  return str.find(key) == 0;
+}
+
 vector<std::string> str_split(const std::string & str, char sep) {
   vector<std::string> result;
   size_t st = 0, en = 0;

@@ -52,7 +52,17 @@ public:
 
   void build() {
     vector<long> indices(items.size());
-    for(std::size_t i = 0; i < items.size(); ++i) { indices[i] = i; }
+    for(std::size_t i = 0; i < items.size(); ++i) { 
+      indices[i] = i;
+    }
+    root = build_recsive(indices);
+  }
+
+  void build(const std::vector<long> & init_indices) {
+    vector<long> indices(items.size());
+    for(std::size_t i = 0; i < items.size(); ++i) { 
+      indices[i] = init_indices[i];
+    }
     root = build_recsive(indices);
   }
   

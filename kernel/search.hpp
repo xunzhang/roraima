@@ -150,15 +150,16 @@ int search(roraima::query & q,
 // brute force pair-wise search
 void search(roraima::query & q,
 	const vector<vector<double> > & buf,
+	const vector<long> ids,
 	vector<long> & result) {
   result.resize(0);
   vector<std::pair<long, double> > dpt;
-  int id = 0;
+  int i = 0;
   for(auto & item_factor : buf) {
     dpt.push_back(
-    	std::pair<long, double>(id,
+    	std::pair<long, double>(ids[i],
 		roraima::dot_product(q.item, item_factor)));
-    id += 1;
+    i += 1;
   }
   std::sort(dpt.begin(), dpt.end(), 
   	[] (std::pair<long, double> a, 

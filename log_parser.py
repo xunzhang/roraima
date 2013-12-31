@@ -15,11 +15,8 @@ from quora_wrapper import start_quora_online, quora_online
 logging.basicConfig(filename='roraima_log', format = '%(asctime)s : %(levelname)s : %(message)s', level = logging.INFO)
 logger = logging.getLogger(__name__)
 
-#usr_heart_dct = {}
 log_path = '/mfs/log/access-log/current/radiostat/'
-answer_path = '/mfs/user/wuhong/tmp/'
-#heart_path = '/mfs/user/wuhong/tmp/usr_heart_dict.csv'
-server_list = ['aragorn', 'dori', 'nori', 'thorin']
+query_dct = {}
 
 def exist_check(fn):
     return os.path.exists(fn)
@@ -37,8 +34,8 @@ def load_uid(llst):
     ids = []
     for line in llst:
         l = line.strip('\n').split(',')
-	if (l[0] == 'emtc' or l[0] == 'playlist') and \
-	    l[4].startswith('dj_onlinefactor'):
+	if l[0] == 'emtc' and l[4].startswith('dj_onlinefactor') or \
+	    l[0] == 'playlist' and l[2].startswith('dj_onlinefactor'):
 	    if l[1].isdigit(): 
 	        ids.append(l[1])
     return ids
@@ -57,7 +54,6 @@ def local_store(uid, track_lst):
     gstore.commit()
 
 def main(len_dct, p, topk):
-    #global usr_heart_dict
     server_name = len_dct.keys()[0]
     fn = log_path + server_name + '/radiostat_current'
     #fn = '/mfs/user/wuhong/tmp/radiostat_current'
@@ -65,17 +61,23 @@ def main(len_dct, p, topk):
 	try:
 	    f = file(fn)
             content = f.readlines()
-	    s = len_dct[server_name]
+	    #s = len_dct[server_name]
 	    e = len(content)
+	    if e > 1000:
+	        s = e - 1000
+	    else:
+	        s = 0
 	    if e > s:
 	        len_dct[server_name] = e
 		ids = load_uid(content[s : e])
 		for uid in ids:
+		    if query_dct.get(uid):
+		        continue
+		    query_dct[uid] = '0'
 		    logger.info('uid:%s' % uid)
-		    #if uid in usr_heart_dict: # heart > 10
 		    result = quora_online(uid, p, topk)
 		    if result != -1: 
-			local_store(uid, ','.join(result))
+	                local_store(uid, ','.join(result))
             f.close()
 	except:
 	    logger.info('waiting')
@@ -86,10 +88,11 @@ if __name__ == '__main__':
     rk = comm.Get_rank()
     usr_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/usr_factor.csv'
     item_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/item_factor.csv'
-    usr_heart_fn = '/mfs/user/wuhong/tmp/usr_heart_dict.csv'
+    usr_blacklst_fn = '/mfs/user/wuhong/Data/fm/usr_blacklst_dict.csv'
+    artist_track_fn = '/mfs/user/wuhong/Data/fm/artist_track_dict.csv'
     topk = 500
-    cache_sz = 10
-    p = start_quora_online(usr_factor_fn, item_factor_fn, usr_heart_fn, topk, cache_sz)
+    cache_sz = 100
+    p = start_quora_online(usr_factor_fn, item_factor_fn, usr_blacklst_fn, artist_track_fn, topk, cache_sz)
     if rk == 0:
         len_dct = {'dori' : 0}
     if rk == 1:

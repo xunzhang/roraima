@@ -11,6 +11,18 @@
 #include "search.hpp"
 #include "cache.hpp"
 
+std::vector<long> get_item_indices(const std::string & fname) {
+  std::vector<long> ids;
+  std::ifstream f(fname);
+  std::string line_buf;
+  if(!f) { throw std::runtime_error("roraima error in get_item_factor: loading failed."); }
+  while(std::getline(f, line_buf)) {
+    auto tmp = roraima::str_split(line_buf, ":");
+    ids.push_back(std::stol(tmp[0]));
+  }
+  return ids;
+}
+
 std::vector<std::vector<double> > get_item_factor(const std::string & fname) {
   std::vector<std::vector<double> > factor_vec_lst;
   std::ifstream f(fname);
@@ -83,10 +95,11 @@ int main(int argc, char *argv[])
 			--cache_sz\n");
   google::ParseCommandLineFlags(&argc, &argv, true);
 
-  roraima::lru_cache<std::string, std::vector<std::size_t> > cache(FLAGS_cache_sz);
+  roraima::lru_cache<std::string, std::vector<long> > cache(FLAGS_cache_sz);
 
-  std::vector<std::size_t> answer;
+  std::vector<long> answer;
   auto item_factor_lst = get_item_factor(FLAGS_item_factor_file);
+  auto item_indices = get_item_indices(FLAGS_item_factor_file);
   
   std::string s;
   while(std::cin >> s) { 
@@ -94,7 +107,7 @@ int main(int argc, char *argv[])
     roraima::query q(user_factor, FLAGS_topk);
     answer = cache.Get(s);
     if(!answer.size()) {
-      roraima::search(q, item_factor_lst, answer);
+      roraima::search(q, item_factor_lst, item_indices, answer);
     } else {}
     for(auto & indx : answer)
       std::cout << indx << std::endl;
