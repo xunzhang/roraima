@@ -15,7 +15,7 @@ from quora_wrapper import start_quora_online, quora_online
 logging.basicConfig(filename='roraima_log', format = '%(asctime)s : %(levelname)s : %(message)s', level = logging.INFO)
 logger = logging.getLogger(__name__)
 
-log_path = '/mfs/log/access-log/current/radiostat/'
+log_path = '/logpath/'
 query_dct = {}
 
 def exist_check(fn):
@@ -55,8 +55,7 @@ def local_store(uid, track_lst):
 
 def main(len_dct, p, topk):
     server_name = len_dct.keys()[0]
-    fn = log_path + server_name + '/radiostat_current'
-    #fn = '/mfs/user/wuhong/tmp/radiostat_current'
+    fn = log_path + server_name + '/latest'
     if os.path.exists(fn):
 	try:
 	    f = file(fn)
@@ -86,10 +85,10 @@ def main(len_dct, p, topk):
 if __name__ == '__main__':
     comm = MPI.COMM_WORLD
     rk = comm.Get_rank()
-    usr_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/usr_factor.csv'
-    item_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/item_factor.csv'
-    usr_blacklst_fn = '/mfs/user/wuhong/Data/fm/usr_blacklst_dict.csv'
-    artist_track_fn = '/mfs/user/wuhong/Data/fm/artist_track_dict.csv'
+    usr_factor_fn = 'usr_factor.csv'
+    item_factor_fn = 'item_factor.csv'
+    usr_blacklst_fn = 'usr_blacklst_dict.csv'
+    artist_track_fn = 'artist_track_dict.csv'
     method = 'tree' # linear
     topk = 500
     cache_sz = 100

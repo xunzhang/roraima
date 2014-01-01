@@ -8,9 +8,9 @@ def foo2(uid, p):
     print quora_brute_force(uid, p, 200)
 
 if __name__ == '__main__':
-    usr_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/usr_factor.csv'
-    item_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/item_factor.csv'
-    usr_heart_fn = '/mfs/user/wuhong/tmp/usr_heart_dict.csv'
+    usr_factor_fn = 'usr_factor.csv'
+    item_factor_fn = 'item_factor.csv'
+    usr_heart_fn = 'usr_heart_dict.csv'
     topk = 200
     cache_sz = 10000
     p = start_quora_online(usr_factor_fn, item_factor_fn, usr_heart_fn, topk, cache_sz)
