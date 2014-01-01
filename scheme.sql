@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `user_top_rating_track_predict1`;
+DROP TABLE IF EXISTS `sqltable`;
 CREATE TABLE `user_top_rating_track_predict1` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL DEFAULT '0',

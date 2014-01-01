@@ -42,13 +42,13 @@ def load_uid(llst):
 
 def local_store(uid, track_lst):
     timestamp = datetime.datetime.now()
-    tmp_cmd = 'select * from user_top_rating_track_predict where user_id = %s;' % uid
+    tmp_cmd = 'select * from sqltable where user_id = %s;' % uid
     tmp = gstore.execute(tmp_cmd)
     if tmp:
-        sql_cmd = 'update user_top_rating_track_predict set track_lst = "%s", time = "%s" where user_id = %s;' % (track_lst, timestamp, uid)
+        sql_cmd = 'update sqltable set track_lst = "%s", time = "%s" where user_id = %s;' % (track_lst, timestamp, uid)
 	logger.info(sql_cmd)
     else:
-        sql_cmd  = 'insert into user_top_rating_track_predict (user_id, track_lst) values(%s, "%s");' % (uid, track_lst)
+        sql_cmd  = 'insert into sqltable (user_id, track_lst) values(%s, "%s");' % (uid, track_lst)
 	logger.info(sql_cmd)
     gstore.execute(sql_cmd)
     gstore.commit()
@@ -94,11 +94,11 @@ if __name__ == '__main__':
     cache_sz = 100
     p = start_quora_online(usr_factor_fn, item_factor_fn, usr_blacklst_fn, artist_track_fn, method, topk, cache_sz)
     if rk == 0:
-        len_dct = {'dori' : 0}
+        len_dct = {'srv1' : 0}
     if rk == 1:
-        len_dct = {'nori' : 0}
+        len_dct = {'srv2' : 0}
     if rk == 2:
-        len_dct = {'thorin' : 0}
+        len_dct = {'srv3' : 0}
     logger.info('rank %s starting at main loop @%s' % (rk, socket.gethostname()))
     # main loop
     while 1:
