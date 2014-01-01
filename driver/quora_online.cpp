@@ -181,7 +181,13 @@ DEFINE_string(artist_track_file,
 	"fmt: artist_id:item_id1|item_id2|...|item_idk.\n\
 	':' and '|' can be replaced by sep1, sep2\n");
 
+static bool ValidateMethod(const char* flagname, const std::string & method) {
+  if(method == "linear" || method == "tree") return true;
+  return false;
+}
+
 DEFINE_string(method, "tree", "search method: linear | tree\n");
+static const bool method_dummy = google::RegisterFlagValidator(&FLAGS_method, &ValidateMethod);
 
 DEFINE_int64(topk, 50, "top k maximum rating(default kernel: inner product).\n");
 
