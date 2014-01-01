@@ -150,14 +150,14 @@ int search(roraima::query & q,
 // brute force pair-wise search
 void search(roraima::query & q,
 	const vector<vector<double> > & buf,
-	const vector<long> ids,
 	vector<long> & result) {
   result.resize(0);
   vector<std::pair<long, double> > dpt;
   int i = 0;
   for(auto & item_factor : buf) {
+    if(q.blacklst.find(i) != q.blacklst.end()) { i++; continue; }
     dpt.push_back(
-    	std::pair<long, double>(ids[i],
+    	std::pair<long, double>(i,
 		roraima::dot_product(q.item, item_factor)));
     i += 1;
   }

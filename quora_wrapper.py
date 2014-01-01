@@ -11,10 +11,10 @@ def quora_online(uid, p, topk = 50):
         item_lst.append(tmp)
     return item_lst
         
-def start_quora_online(usr_factor_fn, item_factor_fn, usr_blacklst_fn, artist_track_fn, topk = 50, cache_sz = 1000):
+def start_quora_online(usr_factor_fn, item_factor_fn, usr_blacklst_fn, artist_track_fn, method = 'tree', topk = 50, cache_sz = 1000):
     scmd = './bin/quora_online --item_factor_file ' + item_factor_fn + \
     	' --usr_factor_file ' + usr_factor_fn + ' --usr_blacklst_file ' + usr_blacklst_fn + \
-	' --artist_track_file ' + artist_track_fn + \
+	' --artist_track_file ' + artist_track_fn + ' --method ' + method \
 	' --topk ' + str(topk) + ' --cache_sz ' + str(cache_sz)
     p = Popen(scmd.split(), stdin = PIPE, stdout = PIPE)
     return p

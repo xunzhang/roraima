@@ -90,16 +90,15 @@ if __name__ == '__main__':
     item_factor_fn = '/mfs/user/wuhong/Data/fm/factor_100d/item_factor.csv'
     usr_blacklst_fn = '/mfs/user/wuhong/Data/fm/usr_blacklst_dict.csv'
     artist_track_fn = '/mfs/user/wuhong/Data/fm/artist_track_dict.csv'
+    method = 'tree' # linear
     topk = 500
     cache_sz = 100
-    p = start_quora_online(usr_factor_fn, item_factor_fn, usr_blacklst_fn, artist_track_fn, topk, cache_sz)
+    p = start_quora_online(usr_factor_fn, item_factor_fn, usr_blacklst_fn, artist_track_fn, method, topk, cache_sz)
     if rk == 0:
         len_dct = {'dori' : 0}
     if rk == 1:
-        len_dct = {'aragorn' : 0}
-    if rk == 2:
         len_dct = {'nori' : 0}
-    if rk == 3:
+    if rk == 2:
         len_dct = {'thorin' : 0}
     logger.info('rank %s starting at main loop @%s' % (rk, socket.gethostname()))
     # main loop

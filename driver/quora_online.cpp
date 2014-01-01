@@ -181,6 +181,8 @@ DEFINE_string(artist_track_file,
 	"fmt: artist_id:item_id1|item_id2|...|item_idk.\n\
 	':' and '|' can be replaced by sep1, sep2\n");
 
+DEFINE_string(method, "tree", "search method: linear | tree\n");
+
 DEFINE_int64(topk, 50, "top k maximum rating(default kernel: inner product).\n");
 
 DEFINE_int64(cache_sz, 1000, "cache size.\n");
@@ -192,6 +194,7 @@ int main(int argc, char *argv[])
 			--usr_factor_file\tuser factor\n\
 			--usr_blacklst_file\tuser black list\n\
 			--artist_track_file\tartist track mapping file \n\
+			--method\tsearch method\n\
 			--topk\n\
 			--cache_sz\n");
   google::ParseCommandLineFlags(&argc, &argv, true);
@@ -204,9 +207,10 @@ int main(int argc, char *argv[])
   // load item factor and construct balltree
   auto item_factor_lst = get_item_factor(FLAGS_item_factor_file);
   roraima::balltree<double, roraima::eculid_dist> stree(item_factor_lst);
-  stree.build();
-
-  /* generate:
+  if(FLAGS_method == "tree") {
+    stree.build();
+  }
+  /* init:
    *   item_indices_dct - {indx : iid}
    *   reverse_item_indices_dct - {iid : indx}
    *   top_ibias_ids - {iid}
@@ -223,7 +227,7 @@ int main(int argc, char *argv[])
 
   std::string s;
   std::vector<double> user_factor;
-  std::unordered_map<long, char> black_ids;
+  std::unordered_map<long, char> black_ids; // {indx : '0'}
   // main loop 
   while(std::cin >> s) { 
     
@@ -256,7 +260,12 @@ int main(int argc, char *argv[])
     
     answer = cache.Get(s);
     if(!answer.size()) {
-      roraima::search(q, stree, answer);
+      if(FLAGS_method == "tree") {
+        roraima::search(q, stree, answer);
+      } else if(FLAGS_method == "linear"){
+        // linear
+        roraima::search(q, item_factor_lst, answer); 
+      }
     } else {}
     cache.Put(s, answer);
 

@@ -21,18 +21,13 @@ MKDIR = \
 	mkdir -p $(BIN_DIR)
 RM = rm -rf
 
-all: quora_online quora_brute_force 
+all: quora_online 
 
 # rules
 quora_online: $(CXXSOURCE)
 	$(MKDIR)
 	$(CXX) $(CPPFLAGS) $(CFLAGS) $(LIBS) -o $(BIN_DIR)quora_online $^
 	@echo 'Successfully Built in ./bin/quora_online'
-
-quora_brute_force: $(CXXSOURCE_BF)
-	$(MKDIR)
-	$(CXX) $(CPPFLAGS) $(CFLAGS) $(LIBS) -o $(BIN_DIR)quora_brute_force $^
-	@echo 'Successfully Built in ./bin/quora_brute_force'
 
 .PHONY: clean
 
