@@ -9,7 +9,7 @@ import logging
 
 from mpi4py import MPI
 
-from DoubanAlg import gstore
+import Xstore
 from quora_wrapper import start_quora_online, quora_online
 
 logging.basicConfig(filename='roraima_log', format = '%(asctime)s : %(levelname)s : %(message)s', level = logging.INFO)
@@ -43,15 +43,15 @@ def load_uid(llst):
 def local_store(uid, track_lst):
     timestamp = datetime.datetime.now()
     tmp_cmd = 'select * from sqltable where user_id = %s;' % uid
-    tmp = gstore.execute(tmp_cmd)
+    tmp = Xstore.execute(tmp_cmd)
     if tmp:
         sql_cmd = 'update sqltable set track_lst = "%s", time = "%s" where user_id = %s;' % (track_lst, timestamp, uid)
 	logger.info(sql_cmd)
     else:
         sql_cmd  = 'insert into sqltable (user_id, track_lst) values(%s, "%s");' % (uid, track_lst)
 	logger.info(sql_cmd)
-    gstore.execute(sql_cmd)
-    gstore.commit()
+    Xstore.execute(sql_cmd)
+    Xstore.commit()
 
 def main(len_dct, p, topk):
     server_name = len_dct.keys()[0]
@@ -97,8 +97,6 @@ if __name__ == '__main__':
         len_dct = {'srv1' : 0}
     if rk == 1:
         len_dct = {'srv2' : 0}
-    if rk == 2:
-        len_dct = {'srv3' : 0}
     logger.info('rank %s starting at main loop @%s' % (rk, socket.gethostname()))
     # main loop
     while 1:
